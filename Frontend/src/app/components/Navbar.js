@@ -27,11 +27,16 @@ const Navbar = () => {
                     </ul>
                     <div className='flex  text-xl gap-1 items-center bg-sky-500 pl-4 pr-4 mt-2 mb-2 rounded-3xl justify-center'>
 
-                        <button className='hover:text-black  transition-transform duration-200 cursor-pointer inline-block hover:scale-125'>LogIn
+                      <Link href={"/Login"}  className='hover:text-black  transition-transform duration-200 cursor-pointer inline-block hover:scale-125' > LogIn
 
-                        </button>
+                       
+                        </Link>
+
                         <div className='text-4xl text-black'>/</div>
-                        <button className='hover:text-black  transition-transform duration-200 cursor-pointer inline-block hover:scale-125'>SignIn </button>
+                        <Link href={"/Signup"}  className='hover:text-black  transition-transform duration-200 cursor-pointer inline-block hover:scale-125' > Signup
+
+                      
+                        </Link>
 
 
                     </div>

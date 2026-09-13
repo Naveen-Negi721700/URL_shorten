@@ -10,7 +10,11 @@ app.use(cors({
 }))
 app.set("trust proxy", 1);
 
-app.use(express.json());
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
+app.use(express.static("public"))
+app.use(cookieParser())
+
 
 // API routes
 app.use("/api/v1/url", routes);

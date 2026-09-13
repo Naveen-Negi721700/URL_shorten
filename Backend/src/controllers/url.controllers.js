@@ -4,6 +4,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Url } from "../models/url.models.js";
 import { nanoid, urlAlphabet } from "nanoid";
 import { User } from "../models/User.models.js";
+import jwt from "jsonwebtoken";
 
 const getAccessAndRefreshToken = async (userid) => {
     try {
@@ -11,7 +12,7 @@ const getAccessAndRefreshToken = async (userid) => {
         const accessToken = await getAccessToken();
         const refreshToken = await getRefreshToken();
 
-        user.refreshTokens = refreshToken;
+        user.refreshToken = refreshToken;
         user.save({ validation: false })
         return { accessToken, refreshToken }
     } catch (error) {
@@ -36,6 +37,7 @@ const generateNewShortenUrl = asyncHandler(async (req, res) => {
     const db = await Url.create({
         originalUrl,
         shortenUrl,
+         owner: req.user._id,
     })
 
     const shortUrl = `${req.protocol}://${req.get("host")}/${shortenUrl}`
@@ -123,7 +125,7 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User with username or email already exist");
     }
 
-    const user = await User.create({ 
+    const user = await User.create({
         username: username.toLowerCase(),
         email,
         password,
@@ -139,7 +141,7 @@ const registerUser = asyncHandler(async (req, res) => {
 })
 
 const loginUser = asyncHandler(async (req, res) => {
-    const [username, email, password] = req.params;
+    const {username, email, password} = req.body;
     console.log(email);
 
     if (!username && !email) {
@@ -147,7 +149,7 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 
     const user = await User.findOne({
-        $: [{ username }, { email }]
+        $or: [{ username }, { email }]
     })
 
     if (!user) {
@@ -173,9 +175,70 @@ const loginUser = asyncHandler(async (req, res) => {
 
 })
 
+const logOutUser = asyncHandler(async (req, res) => {
+    await User.findByIdAndUpdate(req.user._id, {
+        $set: {
+            refreshToken: undefined
+        },
+
+    },
+        {
+            new: true
+        },
+    )
+
+    const options = {
+        httpOnly: true,
+        secure: true,
+    }
+
+    return res.status(200).clearCookie("accessToken", options).clearCookie("refreshToken", options).json(new apiResponce(200, {}, "User logout successfully"))
 
 
-export { generateNewShortenUrl, connectShorterurlWithOriginalurl, handleGetAnalysiser, registerUser, loginUser }
+})
+
+const refreshaccessToken = asyncHandler(async (req, res) => {
+ const incomingRefreshToken =req.cookies?.refreshToken || req.body?.refreshToken;
+    if (!incomingRefreshToken) {
+        throw new ApiError(401, "unauthorize request")
+    }
+    try {
+        const decodeToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
+        const user = await User.findById(decodeToken?._id)
+        if (!user) {
+            throw new ApiError(401, "invalid request token")
+        }
+        if(incomingRefreshToken!==user?.refreshToken){
+            throw new ApiError(401, "Refresh token is expire or used")
+        }
+    const options = {
+            httpOnly: true,
+            secure: true,
+        }
+        const {accessToken, newRefreshToken}=await getAccessAndRefreshToken(user._id)
+
+        return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", newRefreshToken, options).json(new apiResponce(200, {}, "accessToken, refreshToken: newRefreshToken", "Access token refreshed"))
+
+    } catch (error) {
+    throw new ApiError(401, error?.message || "Invalid refresh token")
+    }
+})
+
+const getUserUrls = asyncHandler(async (req, res) => {
+
+    const urls = await Url.find({
+        owner: req.user._id
+    });
+
+    return res.status(200).json(
+        new apiResponce(
+            200,
+            urls,
+            "User URLs fetched successfully"
+        )
+    );
+});
+export { generateNewShortenUrl, connectShorterurlWithOriginalurl, handleGetAnalysiser, registerUser, loginUser, logOutUser, refreshaccessToken, getUserUrls }
 
 
 

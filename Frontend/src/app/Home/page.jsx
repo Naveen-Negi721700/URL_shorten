@@ -38,7 +38,7 @@ const Home = () => {
       e.preventDefault();                           //it is writtin because brouser refresh page automatacaly after submiting the form 
     
       try {
-        const res = await fetch("http://localhost:8000/api/v1/url/url_shorten", {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URI}/url_shorten`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
