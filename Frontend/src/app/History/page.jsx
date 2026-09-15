@@ -1,28 +1,35 @@
+"use client";
 import React from 'react'
 import { useEffect } from 'react'
 import { useState } from 'react'
+import { useAuth } from "../Context/AuthContext";
+import apiFetch from "../utils/apiFetch";
 
 const History = () => {
   const [url, seturl] = useState([])
+  const { refreshAccessToken } = useAuth();
 
   useEffect(() => {
     const getUrl = async () => {
       try {
-        const responce = await fetch(`${process.env.NEXT_PUBLIC_FETCH_URI}/history`, {
 
-          method: "GET",
-          credentials: "include"
-        }
+
+        const responce = await apiFetch(
+          "/history",
+          {
+            method: "GET"
+          },
+          refreshAccessToken
         );
         console.log("responce is ", responce)
         const data = await responce.json();
         seturl(data.data)
       } catch (error) {
-        console.log()
+        console.log("Error fetching history:", error);
       }
     }
     getUrl();
-  }, []);
+  }, [refreshAccessToken]);
 
 
   return (
@@ -42,17 +49,24 @@ const History = () => {
         {url && (<tbody>
           {url.map((item, index) => {
             return (<tr key={index} className='border-2 border-gray-200'>
-              <td className='pl-4 border-2 border-gray-200'>
-                  {item.shortenUrl}
+              <td className="pl-4 border-2 border-gray-200">
+                <a
+                  href={`http://localhost:8000/${item.shortenUrl}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-2xl text-sky-500 cursor-pointer hover:underline"
+                >
+                  {`http://localhost:8000/${item.shortenUrl}`}
+                </a>
               </td>
               <td className='pl-4 border-2 border-gray-200'>
-                  {item.originalUrl}
+                {item.originalUrl}
               </td>
               <td className='pl-4 border-2 border-gray-200'>
-                   nothing 
+                nothing
               </td>
               <td className='pl-4 border-2 border-gray-200'>
-                   null
+                null
               </td>
             </tr>)
           })}

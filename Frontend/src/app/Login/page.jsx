@@ -3,76 +3,89 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ToastContainer, toast, Bounce } from "react-toastify";
+import { useAuth } from "../Context/AuthContext";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+    const { setUser } = useAuth();
+    const router = useRouter();
 
-const [form, setform] = useState({
-    username: "",
-    password: ""
-});
-
-
-const handleChange = (e) => {
-
-    setform({
-        ...form,
-        [e.target.name]: e.target.value
+    const [form, setform] = useState({
+        usernameOrEmail: "",
+        password: ""
     });
 
-};
+
+    const handleChange = (e) => {
+
+        setform({
+            ...form,
+            [e.target.name]: e.target.value
+        });
+
+    };
 
 
-const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
 
-    e.preventDefault();
+        e.preventDefault();
 
-    try {
+        try {
 
-        const res = await fetch(
-            `${process.env.NEXT_PUBLIC_FETCH_URI}/login`,
-            {
-                method: "POST",
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_FETCH_URI}/login`,
+                {
+                    method: "POST",
 
-                headers: {
-                    "Content-Type": "application/json"
-                },
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
 
-                credentials: "include",
+                    credentials: "include",
 
-                body: JSON.stringify(form)
-            }
-        );
-
-        const result = await res.json();
-
-        console.log("API response:", result);
-
-
-        if (res.ok) {
-
-            toast.success("Login Successfully!");
-
-            setform({
-                username: "",
-                password: ""
-            });
-
-        } else {
-
-            toast.error(
-                result.message || "Failed to login"
+                    body: JSON.stringify(form)
+                }
             );
 
+            const result = await res.json();
+
+            console.log("API response:", result);
+            if (result.success) {
+                setUser(result.data);
+                console.log("User stored in AuthContext");
+
+                router.push("/");
+            }
+
+
+
+
+
+            if (res.ok) {
+
+                toast.success("Login Successfully!");
+
+                setform({
+                    usernameOrEmail: "",
+                    password: ""
+                });
+
+            } else {
+
+                toast.error(
+                    result.message || "Failed to login"
+                );
+
+            }
+
+        } catch (error) {
+
+            console.log("Failed to fetch API:", error);
+
+            toast.error("Something went wrong");
+
         }
-
-    } catch (error) {
-
-        console.log("Failed to fetch API:", error);
-
-        toast.error("Something went wrong");
-
-    }
-};
+    };
 
 
     return (
@@ -133,11 +146,10 @@ const handleSubmit = async (e) => {
                                 Username or Email
 
                             </label>
-
                             <input
                                 type="text"
-                                name="username"
-                                value={form.username}
+                                name="usernameOrEmail"
+                                value={form.usernameOrEmail}
                                 onChange={handleChange}
                                 placeholder="Enter username or email"
                                 required
@@ -191,7 +203,7 @@ const handleSubmit = async (e) => {
                         Don't have an account?{" "}
 
                         <Link
-                            href="/signup"
+                            href="/Signup"
                             className="text-sky-500 hover:underline"
                         >
 

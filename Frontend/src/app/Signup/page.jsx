@@ -3,9 +3,12 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ToastContainer, toast, Bounce } from 'react-toastify';
+import { useRouter } from "next/navigation";
 export default function Signup() {
+    
 
     const [form, setform] = useState({ username: "", email: "", password: "" })
+      const router = useRouter();
 
     const handleChange = ((e) => {
         setform({
@@ -47,6 +50,9 @@ export default function Signup() {
                 draggable: true,
                 theme: "light",
             });
+
+                  
+                router.push("/Login");
 
             setform({
                 username: "",
