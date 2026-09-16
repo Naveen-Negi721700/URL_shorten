@@ -8,9 +8,7 @@ import {
     useRef
 } from "react";
 
-
 const AuthContext = createContext(null);
-
 
 export const AuthProvider = ({ children }) => {
 
@@ -64,51 +62,13 @@ export const AuthProvider = ({ children }) => {
         hasFetched.current = true;
 
 
-       const getCurrentUser = async () => {
+        const getCurrentUser = async () => {
 
-    console.log("👤 Getting current user...");
+            console.log("👤 Getting current user...");
 
-    try {
+            try {
 
-        let response = await fetch(
-            `${process.env.NEXT_PUBLIC_FETCH_URI}/currentUser`,
-            {
-                method: "GET",
-                credentials: "include"
-            }
-        );
-
-        console.log(
-            "👤 Current user response:",
-            response.status
-        );
-
-
-        if (response.status === 401) {
-
-            console.log(
-                "🔑 Access token expired. Starting refresh..."
-            );
-
-
-            const refreshed =
-                await refreshAccessToken();
-
-
-            console.log(
-                "🔑 Refresh result:",
-                refreshed
-            );
-
-
-            if (refreshed) {
-
-                console.log(
-                    "🔄 Trying current user again..."
-                );
-
-
-                response = await fetch(
+                let response = await fetch(
                     `${process.env.NEXT_PUBLIC_FETCH_URI}/currentUser`,
                     {
                         method: "GET",
@@ -117,59 +77,92 @@ export const AuthProvider = ({ children }) => {
                 );
 
                 console.log(
-                    "👤 Second current user response:",
+                    "👤 Current user response:",
                     response.status
                 );
 
-            } else {
+
+                if (response.status === 401) {
+
+                    console.log(
+                        "🔑 Access token expired. Starting refresh..."
+                    );
+
+                    const refreshed =
+                        await refreshAccessToken();
+
+                    console.log(
+                        "🔑 Refresh result:",
+                        refreshed
+                    );
+
+
+                    if (refreshed) {
+
+                        console.log(
+                            "🔄 Trying current user again..."
+                        );
+
+                        response = await fetch(
+                            `${process.env.NEXT_PUBLIC_FETCH_URI}/currentUser`,
+                            {
+                                method: "GET",
+                                credentials: "include"
+                            }
+                        );
+
+                        console.log(
+                            "👤 Second current user response:",
+                            response.status
+                        );
+
+                    } else {
+
+                        console.log(
+                            "❌ Refresh failed"
+                        );
+
+                        setUser(null);
+
+                        return;
+                    }
+                }
+
+
+                const data = await response.json();
+
 
                 console.log(
-                    "❌ Refresh failed"
+                    "👤 Current user data:",
+                    data
+                );
+
+
+                if (data.success) {
+
+                    setUser(data.data);
+
+                } else {
+
+                    setUser(null);
+                }
+
+
+            } catch (error) {
+
+                console.log(
+                    "❌ Get current user error:",
+                    error
                 );
 
                 setUser(null);
 
-                return;
+            } finally {
+
+                setLoading(false);
             }
-        }
 
-
-        const data = await response.json();
-
-
-        console.log(
-            "👤 Current user data:",
-            data
-        );
-
-
-        if (data.success) {
-
-            setUser(data.data);
-
-        } else {
-
-            setUser(null);
-
-        }
-
-
-    } catch (error) {
-
-        console.log(
-            "❌ Get current user error:",
-            error
-        );
-
-        setUser(null);
-
-    } finally {
-
-        setLoading(false);
-
-    }
-
-};
+        };
 
 
         getCurrentUser();

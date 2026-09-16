@@ -1,20 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../Context/AuthContext";
 import apiFetch from "../utils/apiFetch";
 
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import React from "react";
 
+
+
 const Home = () => {
   const { refreshAccessToken } = useAuth();
+
 
   const [form, setform] = useState({
     originalUrl: "",
   });
 
   const [responce, setresponce] = useState(null);
+
+  useEffect(() => {
+    const latest = localStorage.getItem("latestShortUrl");
+
+    if (latest) {
+      setresponce(JSON.parse(latest));
+    }
+  }, []);
 
   const copyText = async (text) => {
     toast("🦄 copy to clipboard", {
@@ -57,6 +68,10 @@ const Home = () => {
       const result = await res.json();
 
       setresponce(result);
+
+      if (res.ok) {
+        localStorage.setItem("latestShortUrl", JSON.stringify(result));
+      }
 
       console.log("API response:", result);
 
@@ -103,13 +118,18 @@ const Home = () => {
       <section className="mt-6">
         <div className="text-7xl text-gray-200 text-center">
           Shorten Your
-          <span className="text-sky-500 pl-4">forms.</span>
+          <span className="text-sky-500 pl-4">Links.</span>
         </div>
 
         <div className="text-7xl text-gray-200 text-center">
           Simplify Your
-          <span className="text-sky-500 pl-4">Links.</span>
+          <span className="text-sky-500 pl-4">World</span>
         </div>
+
+        {/* <div className="text-2xl mt-2 text-gray-200 text-center">
+          Create short, shareable links in seconds. Fast, simple and reliable.
+          <span className="text-sky-500 pl-4"></span>
+        </div> */}
 
         <div className="min-h-80 bg-sky-500 m-2 mt-8 rounded-4xl pb-20">
           <form
@@ -138,13 +158,14 @@ const Home = () => {
             <div className="flex">
               {/* Short URL Card */}
               <div className="flex flex-col w-1/2 min-h-80 bg-stone-800 mr-5 rounded-4xl border-gray-200 border-2 ml-10 p-6">
-                <p className="text-2xl text-gray-200">
-                  Here's your short link:
+                <p className="text-4xl text-gray-200">
+                  Here's your short link!
                 </p>
 
                 <div className="flex-col">
                   {responce && responce.data && (
                     <div className="flex items-center gap-10 mt-4">
+                      
                       <a
                         href={responce.data.shortUrl}
                         target="_blank"
@@ -165,9 +186,8 @@ const Home = () => {
 
                   {responce && (
                     <div className="mt-6 text-gray-200">
-                      Your shortened link is available for this session only.
-                      It will disappear when you refresh the page. To view all
-                      your saved links, visit the History section.
+                      Your latest shortened link is saved here for easy access.
+                      For all your previously created links, visit the History section.
                     </div>
                   )}
 
@@ -197,6 +217,18 @@ const Home = () => {
               <div className="flex flex-col text-center text-gray-200 w-1/2 bg-stone-800 text-2xl rounded-4xl border-gray-200 border-2 ml-5 mr-10">
                 <p className="pt-4">Here's your short QR code:</p>
 
+                {responce && responce.data && (
+                  <div className="flex justify-center items-center mt-4">
+                    <div className="w-1/3">
+                      <img
+                        src={responce.data.qrCode}
+                        alt="QR Code"
+                        className="w-full h-auto"
+                      />
+                    </div>
+                  </div>
+                )}
+
                 {!responce && (
                   <div className="flex justify-center items-center">
                     <div className="w-1/3 mt-3">
@@ -216,7 +248,7 @@ const Home = () => {
       <section className="bg-[#050B14] min-h-90 text-white flex flex-col items-center rounded-4xl  px-4 py-16 font-sans">
         {/* Header Section */}
         <div className="text-center max-w-3xl mb-12 ">
-          
+
           <h2 className="text-4xl md:text-5xl font-bold  mb-4">
             Why <span className="text-sky-400">Shrinkit.io?</span>
           </h2>

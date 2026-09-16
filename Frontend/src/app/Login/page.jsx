@@ -6,6 +6,8 @@ import { ToastContainer, toast, Bounce } from "react-toastify";
 import { useAuth } from "../Context/AuthContext";
 import { useRouter } from "next/navigation";
 
+import Oauth from "./Oauth.page";
+
 export default function Login() {
     const { setUser } = useAuth();
     const router = useRouter();
@@ -101,10 +103,12 @@ export default function Login() {
                 theme="light"
                 transition={Bounce}
             />
+            <div className="flex  ">
+          <Oauth />
 
-            <div className="min-h-screen flex justify-center items-center bg-stone-900 px-4">
+            <div className="min-h-screen flex justify-center w-1/2  items-center bg-stone-800 px-4">
 
-                <div className="w-full max-w-md bg-stone-800 border-2 border-gray-300 rounded-3xl p-8">
+                <div className="w-full max-w-md bg-stone-900  border-2 border-gray-300 rounded-3xl p-8">
 
                     {/* Logo */}
 
@@ -153,7 +157,7 @@ export default function Login() {
                                 onChange={handleChange}
                                 placeholder="Enter username or email"
                                 required
-                                className="w-full mt-2 px-4 py-3 rounded-xl bg-stone-900 border border-gray-500 text-gray-200 outline-none focus:border-sky-500"
+                                className="w-full mt-2 px-4 py-3 rounded-xl bg-stone-800 border border-gray-500 text-gray-200 outline-none focus:border-sky-500"
                             />
 
                         </div>
@@ -176,7 +180,7 @@ export default function Login() {
                                 onChange={handleChange}
                                 placeholder="Enter your password"
                                 required
-                                className="w-full mt-2 px-4 py-3 rounded-xl bg-stone-900 border border-gray-500 text-gray-200 outline-none focus:border-sky-500"
+                                className="w-full mt-2 px-4 py-3 rounded-xl bg-stone-800 border border-gray-500 text-gray-200 outline-none focus:border-sky-500"
                             />
 
                         </div>
@@ -214,6 +218,8 @@ export default function Login() {
                     </p>
 
                 </div>
+
+            </div>
 
             </div>
 

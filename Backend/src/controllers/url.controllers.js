@@ -2,26 +2,51 @@ import { ApiError } from "../utils/apiError.js";
 import { apiResponce } from "../utils/apiResponce.js"
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Url } from "../models/url.models.js";
-import { nanoid, urlAlphabet } from "nanoid";
+import { nanoid, } from "nanoid";
 import { User } from "../models/User.models.js";
 import jwt from "jsonwebtoken";
+import QRCode from "qrcode";
 
-const getAccessAndRefreshToken = async (userid) => {
+const getAccessAndRefreshToken = async (userId) => {
+
     try {
-        const user = await User.findById(userid)
-        const accessToken = await getAccessToken();
-        const refreshToken = await getRefreshToken();
 
-        user.refreshToken = refreshToken;
-        user.save({ validation: false })
-        return { accessToken, refreshToken }
+        const user =
+            await User.findById(userId);
+
+
+        const accessToken =
+            user.generateAccessToken();
+
+
+        const refreshToken =
+            user.generateRefreshToken();
+
+
+        user.refreshToken =
+            refreshToken;
+
+
+        await user.save({
+            validateBeforeSave: false
+        });
+
+
+        return {
+            accessToken,
+            refreshToken
+        };
+
+
     } catch (error) {
-        throw new ApiError(500, "Something went wrong while generating ascess and refresh tokens ")
 
+        throw new ApiError(
+            500,
+            "Something went wrong"
+        );
     }
 
-}
-
+};
 const generateNewShortenUrl = asyncHandler(async (req, res) => {
     const { originalUrl } = req.body;
     console.log("user url is ", originalUrl);
@@ -37,11 +62,12 @@ const generateNewShortenUrl = asyncHandler(async (req, res) => {
     const db = await Url.create({
         originalUrl,
         shortenUrl,
-         owner: req.user._id,
+        owner: req.user._id,
     })
 
     const shortUrl = `${req.protocol}://${req.get("host")}/${shortenUrl}`
     console.log(shortUrl);
+    const qrCode = await QRCode.toDataURL(shortUrl);
 
 
     return res.status(200).json(
@@ -49,7 +75,8 @@ const generateNewShortenUrl = asyncHandler(async (req, res) => {
             {
                 originalUrl,
                 shortUrl,
-            }, "shortenUrl created successfully and added to database ")
+                qrCode,
+            }, "shortenUrl and QR code created successfully and added to database ")
     )
 
 
@@ -141,88 +168,213 @@ const registerUser = asyncHandler(async (req, res) => {
 })
 
 const loginUser = asyncHandler(async (req, res) => {
-    const {username, email, password} = req.body;
-    console.log(email);
 
-    if (!username && !email) {
-        throw new ApiError(401, "username and email are required");
+    const { usernameOrEmail, password } = req.body;
+
+    if (!usernameOrEmail || !password) {
+        throw new ApiError(
+            400,
+            "Username/email and password are required"
+        );
     }
 
     const user = await User.findOne({
-        $or: [{ username }, { email }]
-    })
+        $or: [
+            { username: usernameOrEmail },
+            { email: usernameOrEmail }
+        ]
+    });
 
     if (!user) {
-        throw new ApiError(400, "user does not exixt")
+        throw new ApiError(400, "User does not exist");
     }
 
     const ispasswordValid = await user.comparePassword(password);
 
     if (!ispasswordValid) {
-        throw new ApiError(401, "Invalid user credentails")
-    }
-    const { accessToken, refreshToken } = await getAccessAndRefreshToken(user._id);
-
-    const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
-
-
-    const options = {
-        httpOnly: true,    //  this line is written  so 
-        secure: true,
+        throw new ApiError(401, "Invalid user credentials");
     }
 
-    return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", refreshToken, options).json(new apiResponce(200, loggedInUser, "User logged in Successfully"))
+    const { accessToken, refreshToken } =
+        await getAccessAndRefreshToken(user._id);
 
-})
-
-const logOutUser = asyncHandler(async (req, res) => {
-    await User.findByIdAndUpdate(req.user._id, {
-        $set: {
-            refreshToken: undefined
-        },
-
-    },
-        {
-            new: true
-        },
-    )
+    const loggedInUser = await User
+        .findById(user._id)
+        .select("-password -refreshToken");
 
     const options = {
         httpOnly: true,
-        secure: true,
-    }
+        secure: false, // localhost development
+        sameSite: "lax",
+        path: "/"
+    };
 
-    return res.status(200).clearCookie("accessToken", options).clearCookie("refreshToken", options).json(new apiResponce(200, {}, "User logout successfully"))
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new apiResponce(
+                200,
+                loggedInUser,
+                "User logged in Successfully"
+            )
+        );
+});
 
+const logOutUser = asyncHandler(async (req, res) => {
 
-})
-
-const refreshaccessToken = asyncHandler(async (req, res) => {
- const incomingRefreshToken =req.cookies?.refreshToken || req.body?.refreshToken;
-    if (!incomingRefreshToken) {
-        throw new ApiError(401, "unauthorize request")
-    }
-    try {
-        const decodeToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
-        const user = await User.findById(decodeToken?._id)
-        if (!user) {
-            throw new ApiError(401, "invalid request token")
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                refreshToken: undefined
+            }
         }
-        if(incomingRefreshToken!==user?.refreshToken){
-            throw new ApiError(401, "Refresh token is expire or used")
-        }
+    );
+
+
     const options = {
-            httpOnly: true,
-            secure: true,
+        httpOnly: true,
+        secure: false, // localhost development
+        sameSite: "lax",
+        path: "/"
+    };
+
+
+    return res
+        .status(200)
+        .clearCookie("accessToken", options)
+        .clearCookie("refreshToken", options)
+        .json(
+            new apiResponce(
+                200,
+                {},
+                "User logout successfully"
+            )
+        );
+
+});
+
+const refreshaccessToken = asyncHandler(
+    async (req, res) => {
+
+        console.log(
+            "🔄 Refresh token route called"
+        );
+
+
+        const incomingRefreshToken =
+            req.cookies?.refreshToken ||
+            req.body?.refreshToken;
+
+
+        console.log(
+            "Refresh token received:",
+            incomingRefreshToken
+                ? "YES"
+                : "NO"
+        );
+
+
+        if (!incomingRefreshToken) {
+
+            throw new ApiError(
+                401,
+                "Unauthorized request"
+            );
         }
-        const {accessToken, newRefreshToken}=await getAccessAndRefreshToken(user._id)
 
-        return res.status(200).cookie("accessToken", accessToken, options).cookie("refreshToken", newRefreshToken, options).json(new apiResponce(200, {}, "accessToken, refreshToken: newRefreshToken", "Access token refreshed"))
 
-    } catch (error) {
-    throw new ApiError(401, error?.message || "Invalid refresh token")
+        try {
+
+            const decodedToken =
+                jwt.verify(
+                    incomingRefreshToken,
+                    process.env.REFRESH_TOKEN_SECRET
+                );
+
+
+            const user =
+                await User.findById(
+                    decodedToken?._id
+                );
+
+
+            if (!user) {
+
+                throw new ApiError(
+                    401,
+                    "Invalid refresh token"
+                );
+            }
+
+
+            if (
+                incomingRefreshToken !==
+                user.refreshToken
+            ) {
+
+                throw new ApiError(
+                    401,
+                    "Refresh token is expired or used"
+                );
+            }
+
+
+            const {
+                accessToken,
+                refreshToken: newRefreshToken
+            } =
+                await getAccessAndRefreshToken(
+                    user._id
+                );
+
+
+            const options = {
+                httpOnly: true,
+                secure: false, // localhost development
+                sameSite: "lax",
+                path: "/"
+            };
+
+
+            return res
+                .status(200)
+
+                .cookie(
+                    "accessToken",
+                    accessToken,
+                    options
+                )
+
+                .cookie(
+                    "refreshToken",
+                    newRefreshToken,
+                    options
+                )
+
+                .json(
+                    new apiResponce(
+                        200,
+                        {},
+                        "Access token refreshed successfully"
+                    )
+                );
+
+
+        } catch (error) {
+
+            throw new ApiError(
+                401,
+                error?.message ||
+                "Invalid refresh token"
+            );
+
+        }
+
     }
-})
+);
 
 const getUserUrls = asyncHandler(async (req, res) => {
 
@@ -238,7 +390,79 @@ const getUserUrls = asyncHandler(async (req, res) => {
         )
     );
 });
-export { generateNewShortenUrl, connectShorterurlWithOriginalurl, handleGetAnalysiser, registerUser, loginUser, logOutUser, refreshaccessToken, getUserUrls }
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+    return res.status(200).json(new apiResponce(200, req.user, "current user fetch successfully"))
+})
+
+
+const githubLogin = asyncHandler(async (req, res) => {
+    const { githubId, email, name, image } = req.body;
+    console.log("🔥 githubLogin route called");
+    console.log("GitHub data:", req.body);
+
+    if (!githubId || !email) {
+        throw new ApiError(400, "GitHub ID and email are required");
+    }
+
+    let user = await User.findOne({ githubId });
+
+    if (!user) {
+        user = await User.findOne({ email });
+    }
+
+    if (!user) {
+
+        user = await User.create({
+            username: name || email.split("@")[0],
+            email,
+            githubId,
+            avatar: image
+        });
+
+    } else {
+
+        // Existing account found by email
+        // Connect this account with GitHub
+        if (!user.githubId) {
+            user.githubId = githubId;
+        }
+
+        if (!user.avatar && image) {
+            user.avatar = image;
+        }
+
+        await user.save();
+    }
+
+    const { accessToken, refreshToken } =
+        await getAccessAndRefreshToken(user._id);
+
+    const loggedInUser = await User.findById(user._id).select(
+        "-password -refreshToken"
+    );
+
+    const options = {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        path: "/",
+    };
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new apiResponce(
+                200,
+                loggedInUser,
+                "GitHub login successful"
+            )
+        );
+});
+
+export { generateNewShortenUrl, connectShorterurlWithOriginalurl, handleGetAnalysiser, registerUser, loginUser, logOutUser, refreshaccessToken, getUserUrls, getCurrentUser, githubLogin }
 
 
 

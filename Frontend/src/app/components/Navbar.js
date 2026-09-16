@@ -3,8 +3,11 @@
 import React from 'react';
 import Link from "next/link";
 import { useAuth } from "../Context/AuthContext";
+import { useSession, signIn, signOut } from "next-auth/react"
 
 const Navbar = () => {
+    const { data: session } = useSession()
+
 
     const { user, loading } = useAuth();
 
@@ -45,49 +48,69 @@ const Navbar = () => {
                     </ul>
 
 
-                    {/* LOGIN / USER SECTION */}
-                    <div className='flex text-xl gap-1 items-center bg-sky-500 pl-4 pr-4 mt-2 mb-2 rounded-3xl justify-center'>
 
+
+
+
+
+
+
+
+
+
+
+
+                    {/* LOGIN / USER SECTION */}
+                    <div className='flex text-xl gap-1 items-center bg-sky-500 pl-3 pr-4 mt-2 mb-2 rounded-3xl justify-center'>
                         {loading ? (
 
                             <p>Loading...</p>
 
+                        ) : session ? (
+
+                            <>
+                                <div className="text-black px-2">
+                                    {/* {session.user?.email} */}
+                                </div>
+
+                                <button
+                                    onClick={() => signOut()}
+                                    className="hover:text-black transition-transform duration-200 cursor-pointer inline-block hover:scale-125"
+                                >
+                                    Logout
+                                </button>
+                            </>
+
                         ) : user ? (
 
                             <>
-                            <div>
-
-                                <div className="text-black">
-                                    {/* Welcome {user.username} */}
+                                <div className="text-black px-2">
+                                    {/* {user.username} */}
                                 </div>
-                            </div>
-
-                             <div className=''>
 
                                 <Link
                                     href="/Logout"
-                                   className='hover:text-black transition-transform duration-200 cursor-pointer inline-block hover:scale-125'
+                                    className="hover:text-black transition-transform duration-200 cursor-pointer inline-block hover:scale-125"
                                 >
                                     Logout
                                 </Link>
-                             </div>
                             </>
 
                         ) : (
 
                             <>
                                 <Link
-                                    href={"/Login"}
-                                    className='hover:text-black transition-transform duration-200 cursor-pointer inline-block hover:scale-125'
+                                    href="/Login"
+                                    className="hover:text-black transition-transform duration-200 cursor-pointer inline-block hover:scale-125"
                                 >
                                     LogIn
                                 </Link>
 
-                                <div className='text-4xl text-black'>/</div>
+                                <div className="text-4xl text-black">/</div>
 
                                 <Link
-                                    href={"/Signup"}
-                                    className='hover:text-black transition-transform duration-200 cursor-pointer inline-block hover:scale-125'
+                                    href="/Signup"
+                                    className="hover:text-black transition-transform duration-200 cursor-pointer inline-block hover:scale-125"
                                 >
                                     Signup
                                 </Link>
