@@ -40,7 +40,7 @@ export default function Logout() {
 
         } catch (error) {
 
-            console.log("Logout Error:", error);
+            console.error("Logout Error:", error);
 
         } finally {
 

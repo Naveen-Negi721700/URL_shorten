@@ -243,11 +243,26 @@ const Home = () => {
 
                   {/* Description After URL Generation */}
                   {responce && (
-                    <div className="mt-6 text-gray-200 text-sm sm:text-base leading-relaxed">
-                      Your latest shortened link is saved here
-                      for easy access. For all your previously
-                      created links, visit the History section.
-                    </div>
+                    <>
+                      <ul className="mt-6 list-disc space-y-4 pl-5 text-sm leading-relaxed text-gray-200 sm:text-base">
+
+                        <li>
+                          <strong>Ready to share! 🚀</strong>
+                        </li>
+
+                        <li>
+                          Your shortened link is waiting for you.
+                          Copy it and start sharing.
+                        </li>
+
+                        <li>
+                          Your latest shortened link is saved here
+                          for easy access. For all your previously
+                          created links, visit the History section.
+                        </li>
+
+                      </ul>
+                    </>
                   )}
 
                   {/* Dummy Short URL */}
@@ -261,12 +276,14 @@ const Home = () => {
 
                         <button
                           type="button"
-                          className="bg-sky-500 px-4 py-1 text-lg sm:text-xl rounded-full cursor-pointer"
+                          className="bg-sky-500 px-3 py-1 text-lg sm:text-xl rounded-full cursor-pointer"
                         >
                           Copy
                         </button>
 
                       </div>
+
+
 
                       <div className="mt-6 text-gray-200 text-sm sm:text-base leading-relaxed">
                         Your shortened link will appear here.

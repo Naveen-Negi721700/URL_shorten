@@ -10,21 +10,16 @@ import QRCode from "qrcode";
 const getAccessAndRefreshToken = async (userId) => {
 
     try {
-
-        const user =
-            await User.findById(userId);
+        const user =await User.findById(userId);
 
 
-        const accessToken =
-            user.generateAccessToken();
+        const accessToken = user.generateAccessToken();
 
 
-        const refreshToken =
-            user.generateRefreshToken();
+        const refreshToken =user.generateRefreshToken();
 
 
-        user.refreshToken =
-            refreshToken;
+        user.refreshToken =refreshToken;
 
 
         await user.save({
@@ -49,7 +44,7 @@ const getAccessAndRefreshToken = async (userId) => {
 };
 const generateNewShortenUrl = asyncHandler(async (req, res) => {
     const { originalUrl } = req.body;
-    console.log("user url is ", originalUrl);
+    // console.log("user url is ", originalUrl);
 
     if (!originalUrl?.trim()) {
         throw new ApiError(400, "url are required")
@@ -103,13 +98,13 @@ const connectShorterurlWithOriginalurl = asyncHandler(async (req, res) => {
             },
         }
     );
-    console.log(entry);
+    // console.log(entry);
 
 
     if (!entry) {
         throw new ApiError(404, "Short URL not found");
     }
-    console.log(entry.originalUrl)
+    // console.log(entry.originalUrl)
     return res.redirect(entry.originalUrl);
 });
 
@@ -127,7 +122,7 @@ const handleGetAnalysiser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "short url not found");
     }
     const count = result.visitedHistory.length;
-    console.log("from console ", count);
+    // console.log("from console ", count);
 
 
     return res.status(200).json(new apiResponce(200, count, "the totol nu,ber of click on url "))
@@ -138,7 +133,7 @@ const handleGetAnalysiser = asyncHandler(async (req, res) => {
 const registerUser = asyncHandler(async (req, res) => {
     const { username, email, password } = req.body;
 
-    console.log("req.body", req.body);
+    // console.log("req.body", req.body);
 
     if ([username, email, password].some((field) => field?.trim() === "")) {
         throw new ApiError(400, "All fields are required");
@@ -259,22 +254,13 @@ const logOutUser = asyncHandler(async (req, res) => {
 const refreshaccessToken = asyncHandler(
     async (req, res) => {
 
-        console.log(
-            "🔄 Refresh token route called"
-        );
+        console.log("Refresh token route called");
 
 
-        const incomingRefreshToken =
-            req.cookies?.refreshToken ||
-            req.body?.refreshToken;
+        const incomingRefreshToken =req.cookies?.refreshToken ||req.body?.refreshToken;
 
 
-        console.log(
-            "Refresh token received:",
-            incomingRefreshToken
-                ? "YES"
-                : "NO"
-        );
+        console.log("Refresh token received:",incomingRefreshToken? "YES": "NO");
 
 
         if (!incomingRefreshToken) {
@@ -288,15 +274,13 @@ const refreshaccessToken = asyncHandler(
 
         try {
 
-            const decodedToken =
-                jwt.verify(
+            const decodedToken =jwt.verify(
                     incomingRefreshToken,
                     process.env.REFRESH_TOKEN_SECRET
                 );
 
 
-            const user =
-                await User.findById(
+            const user =await User.findById(
                     decodedToken?._id
                 );
 
@@ -310,10 +294,7 @@ const refreshaccessToken = asyncHandler(
             }
 
 
-            if (
-                incomingRefreshToken !==
-                user.refreshToken
-            ) {
+            if (incomingRefreshToken !==user.refreshToken) {
 
                 throw new ApiError(
                     401,
@@ -322,10 +303,7 @@ const refreshaccessToken = asyncHandler(
             }
 
 
-            const {
-                accessToken,
-                refreshToken: newRefreshToken
-            } =
+            const {accessToken,refreshToken: newRefreshToken} =
                 await getAccessAndRefreshToken(
                     user._id
                 );
@@ -398,8 +376,8 @@ const getCurrentUser = asyncHandler(async (req, res) => {
 
 const githubLogin = asyncHandler(async (req, res) => {
     const { githubId, email, name, image } = req.body;
-    console.log("🔥 githubLogin route called");
-    console.log("GitHub data:", req.body);
+    console.log("githubLogin route called");
+    // console.log("GitHub data:", req.body);
 
     if (!githubId || !email) {
         throw new ApiError(400, "GitHub ID and email are required");

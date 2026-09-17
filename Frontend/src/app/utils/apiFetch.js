@@ -9,7 +9,7 @@ const apiFetch = async (endpoint, options = {}, refreshAccessToken) => {
 
     if (response.status === 401) {
 
-        console.log("🔑 Access token expired");
+        console.log(" Access token expired");
 
         const refreshed = await refreshAccessToken();
 
@@ -17,7 +17,7 @@ const apiFetch = async (endpoint, options = {}, refreshAccessToken) => {
             return response;
         }
 
-        console.log("🔄 Retrying original request");
+        console.log(" Retrying original request");
 
         response = await fetch(`${baseUrl}${endpoint}`, {
             ...options,

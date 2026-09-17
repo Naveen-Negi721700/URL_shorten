@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
 
         try {
 
-            console.log("🔄 Trying to refresh access token...");
+            console.log(" Trying to refresh access token...");
 
             const response = await fetch(
                 `${process.env.NEXT_PUBLIC_FETCH_URI}/refresh-token`,
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
 
         } catch (error) {
 
-            console.log(
+            console.error(
                 "Refresh token error:",
                 error
             );
@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
 
         const getCurrentUser = async () => {
 
-            console.log("👤 Getting current user...");
+            console.log(" Getting current user...");
 
             try {
 
@@ -77,7 +77,7 @@ export const AuthProvider = ({ children }) => {
                 );
 
                 console.log(
-                    "👤 Current user response:",
+                    " Current user response:",
                     response.status
                 );
 
@@ -85,22 +85,22 @@ export const AuthProvider = ({ children }) => {
                 if (response.status === 401) {
 
                     console.log(
-                        "🔑 Access token expired. Starting refresh..."
+                        " Access token expired. Starting refresh..."
                     );
 
                     const refreshed =
                         await refreshAccessToken();
 
-                    console.log(
-                        "🔑 Refresh result:",
-                        refreshed
-                    );
+                    // console.log(
+                    //     " Refresh result:",
+                    //     refreshed
+                    // );
 
 
                     if (refreshed) {
 
                         console.log(
-                            "🔄 Trying current user again..."
+                            "Trying current user again..."
                         );
 
                         response = await fetch(
@@ -112,14 +112,14 @@ export const AuthProvider = ({ children }) => {
                         );
 
                         console.log(
-                            "👤 Second current user response:",
+                            " Second current user response:",
                             response.status
                         );
 
                     } else {
 
                         console.log(
-                            "❌ Refresh failed"
+                            " Refresh failed"
                         );
 
                         setUser(null);
@@ -132,10 +132,10 @@ export const AuthProvider = ({ children }) => {
                 const data = await response.json();
 
 
-                console.log(
-                    "👤 Current user data:",
-                    data
-                );
+                // console.log(
+                //     " Current user data:",
+                //     data
+                // );
 
 
                 if (data.success) {
@@ -150,8 +150,8 @@ export const AuthProvider = ({ children }) => {
 
             } catch (error) {
 
-                console.log(
-                    "❌ Get current user error:",
+                console.error(
+                    " Get current user error:",
                     error
                 );
 

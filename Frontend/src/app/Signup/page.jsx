@@ -37,7 +37,7 @@ export default function Signup() {
 
         const result = await res.json();
 
-        console.log("API response", result);
+        // console.log("API response", result);
 
         if (res.ok) {
 
@@ -65,7 +65,7 @@ export default function Signup() {
         }
 
     } catch (error) {
-        console.log("Failed to fetch API", error);
+        console.error("Failed to fetch API", error);
     }
 };
 
