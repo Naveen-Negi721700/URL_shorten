@@ -75,7 +75,7 @@ const Navbar = () => {
 
                                 <button
                                     onClick={() => signOut()}
-                                    className="hover:text-black transition-transform duration-200 cursor-pointer inline-block hover:scale-125"
+                                    className="hover:text-black transition-transform duration-200 cursor-pointer inline-block hover:scale-125 text-2xl"
                                 >
                                     Logout
                                 </button>

@@ -56,7 +56,7 @@ export default function Login() {
                 setUser(result.data);
                 console.log("User stored in AuthContext");
 
-                router.push("/");
+                router.push("/Pricing");
             }
 
 

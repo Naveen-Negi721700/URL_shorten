@@ -81,7 +81,7 @@ const loginOauth = () => {
                         "✅ GitHub user stored in AuthContext"
                     );
 
-                    router.push("/Home");
+                    router.push("/pricing");
 
                 
 
@@ -113,9 +113,26 @@ const loginOauth = () => {
 
 
 return (
-    <div className="flex flex-col gap-2 min-h-screen w-1/2 items-center  pt-50">
+    <div className="flex flex-col gap-2 min-h-screen w-1/2 items-center  pt-24">
+
+<div className="w-full max-w-md bg-stone-900 min-h-136 border-2 border-gray-300 rounded-3xl p-13">
+
+    <h1 className="text-4xl font-bold text-center text-gray-200">
+
+                        Shrinkit
+                        <span className="text-sky-500">.io</span>
+
+                    </h1>
 
 
+                    <h2 className="text-2xl font-semibold text-center text-gray-200 mt-8">
+
+                        Welcome Back
+
+                    </h2>
+                    <div className="mt-5 flex-col ">
+
+         <div className="m-2">         
         <button
             className="flex items-center w-80 bg-slate-50 text-black border border-gray-300 rounded-lg shadow-md max-w-xs px-6 py-2 text-sm font-medium  hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
             <svg className="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -142,8 +159,8 @@ return (
             </svg>
             <span>Continue with Google</span>
         </button>
-
-
+</div>
+<div className="m-2">
         <button
             className="flex items-center w-80 bg-slate-50 text-black border border-gray-300 rounded-lg shadow-md max-w-xs px-6 py-2 text-sm font-medium  hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
             <svg className="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -159,8 +176,8 @@ return (
                 </g>
             </svg> <span>Continue with LinkedIn</span>
         </button>
-
-
+</div>
+<div className="m-2">
         <button
             className="flex items-center w-80 bg-slate-50 text-black border border-gray-300 rounded-lg shadow-md max-w-xs px-6 py-2 text-sm font-medium  hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
             <svg className="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -178,7 +195,7 @@ return (
 
             <span>Continue with Twitter</span>
         </button>
-
+<div className="m-2"></div>
 
         <button
             className="flex items-center w-80 bg-slate-50 text-black border border-gray-300 rounded-lg shadow-md max-w-xs px-6 py-2 text-sm font-medium  hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
@@ -196,9 +213,9 @@ return (
             </svg>
 
             <span>Continue with Facebook</span>
-        </button>
+        </button></div>
 
-
+<div className="m-2">
         <button
             onClick={() => { signIn("github") }}
             className="flex items-center w-80 bg-slate-50 text-black border border-gray-300 rounded-lg shadow-md max-w-xs px-6 py-2 text-sm font-medium  hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
@@ -222,8 +239,8 @@ return (
 
             <span>Continue with Github</span>
         </button>
-
-
+</div>
+<div className="m-2">
         <button
             className="flex items-center w-80 bg-slate-50 text-black border border-gray-300 rounded-lg shadow-md max-w-xs px-6 py-2 text-sm font-medium  hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
             <svg className="h-6 w-6 mr-2" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -243,7 +260,8 @@ return (
 
             <span>Continue with Apple</span>
         </button>
-
+          </div></div>
+</div>
 
     </div>
 )
