@@ -204,8 +204,8 @@ const loginUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: false, // localhost development
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
         path: "/"
     };
 
@@ -236,8 +236,8 @@ const logOutUser = asyncHandler(async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: false, // localhost development
-        sameSite: "lax",
+        secure: true,
+        sameSite: "none",
         path: "/"
     };
 
@@ -333,8 +333,8 @@ const refreshaccessToken = asyncHandler(
 
             const options = {
                 httpOnly: true,
-                secure: false, // localhost development
-                sameSite: "lax",
+                secure: true,
+                sameSite: "none",
                 path: "/"
             };
 
@@ -443,11 +443,11 @@ const githubLogin = asyncHandler(async (req, res) => {
     );
 
     const options = {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        path: "/",
-    };
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    path: "/"
+};
 
     return res
         .status(200)
