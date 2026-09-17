@@ -25,6 +25,13 @@ const Home = () => {
 
 
   const [responce, setresponce] = useState(null);
+  // Get complete short URL
+  const shortUrl = responce?.data?.shortUrl;
+
+  // Get only short code
+  const shortCode = shortUrl
+    ? shortUrl.split("/").pop()
+    : "";
 
 
   // Get latest shortened URL from localStorage
@@ -118,7 +125,7 @@ const Home = () => {
     try {
 
       const response = await apiFetch(
-        "/url_shorten",
+       "/url_shorten",
         {
           method: "POST",
 
@@ -273,14 +280,12 @@ const Home = () => {
                       <div className="flex items-center gap-10 mt-4">
 
                         <a
-                          href={responce.data.shortUrl}
+                          href={shortUrl}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-2xl text-sky-500 cursor-pointer hover:underline"
                         >
-
-                          {responce.data.shortUrl}
-
+                          {shortCode}
                         </a>
 
 

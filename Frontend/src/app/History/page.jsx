@@ -1,83 +1,119 @@
 "use client";
-import React from 'react'
-import { useEffect } from 'react'
-import { useState } from 'react'
+
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../Context/AuthContext";
 import apiFetch from "../utils/apiFetch";
 
 const History = () => {
-  const [url, seturl] = useState([])
+  const [url, seturl] = useState([]);
   const { refreshAccessToken } = useAuth();
 
+  const backendUrl = "https://shrinkit-backend-3f4e.onrender.com";
   useEffect(() => {
     const getUrl = async () => {
       try {
-
-
         const responce = await apiFetch(
           "/history",
           {
-            method: "GET"
+            method: "GET",
           },
           refreshAccessToken
         );
-        console.log("responce is ", responce)
         const data = await responce.json();
-        seturl(data.data)
+
+        if (responce.ok) {
+          seturl(data.data || []);
+        }
       } catch (error) {
         console.log("Error fetching history:", error);
       }
-    }
+    };
     getUrl();
   }, [refreshAccessToken]);
-
-
   return (
     <>
-      <h1 className='text-cyan-500 text-5xl ml-15 mt-4'>Link History</h1>
+      <h1 className="text-cyan-500 text-5xl ml-15 mt-4">
+        Link History
+      </h1>
 
-      <table className='w-11/12 ml-15 mt-10 border-2 border-gray-200 rounded-3xl '>
-        <thead className='text-white text-2xl pl-10 mt-4 border-2 border-gray-200'>
+      <table className="w-11/12 ml-15 mt-10 border-2 border-gray-200">
+        <thead className="text-white text-2xl border-2 border-gray-200">
           <tr>
-            <th className='border-2 border-gray-200'>Short URL</th>
-            <th className='border-2 border-gray-200'>Original URL</th>
-            <th className='border-2 border-gray-200'>Created Data</th>
-            <th className='border-2 border-gray-200'>Click</th>
-            <th className='border-2 border-gray-200'>Action</th>
+            <th className="border-2 border-gray-200 p-3">
+              Short URL
+            </th>
+
+            <th className="border-2 border-gray-200 p-3">
+              Original URL
+            </th>
+
+            <th className="border-2 border-gray-200 p-3">
+              Created Date
+            </th>
+
+            <th className="border-2 border-gray-200 p-3">
+              Click
+            </th>
+
+            <th className="border-2 border-gray-200 p-3">
+              Action
+            </th>
           </tr>
         </thead>
-        {url && (<tbody>
+
+        <tbody>
           {url.map((item, index) => {
-            return (<tr key={index} className='border-2 border-gray-200'>
-              <td className="pl-4 border-2 border-gray-200">
-                <a
-                  href={`http://localhost:8000/${item.shortenUrl}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-2xl text-sky-500 cursor-pointer hover:underline"
-                >
-                  {`http://localhost:8000/${item.shortenUrl}`}
-                </a>
-              </td>
-              <td className='pl-4 border-2 border-gray-200'>
-                {item.originalUrl}
-              </td>
-              <td className='pl-4 border-2 border-gray-200'>
-                nothing
-              </td>
-              <td className='pl-4 border-2 border-gray-200'>
-                null
-              </td>
-            </tr>)
+            const fullShortUrl = `${backendUrl}/${item.shortenUrl}`;
+
+            return (
+              <tr
+                key={item._id || index}
+                className="border-2 border-gray-200"
+              >
+                <td className="pl-4 border-2 border-gray-200">
+                  <a
+                    href={fullShortUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-2xl text-sky-500 cursor-pointer hover:underline"
+                  >
+                    {item.shortenUrl}
+                  </a>
+                </td>
+
+                <td className="pl-4 border-2 border-gray-200">
+                  <a
+                    href={item.originalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-400 hover:underline"
+                  >
+                    {item.originalUrl}
+                  </a>
+                </td>
+
+                <td className="pl-4 border-2 border-gray-200">
+                  {item.createdAt
+                    ? new Date(item.createdAt).toLocaleDateString()
+                    : "N/A"}
+                </td>
+
+                <td className="pl-4 border-2 border-gray-200">
+                  {item.clicks || 0}
+                </td>
+
+                <td className="pl-4 border-2 border-gray-200">
+                  <button className="bg-red-500 text-white px-3 py-1 rounded">
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            );
           })}
-
-
-        </tbody>)}
-
+        </tbody>
       </table>
-
     </>
-  )
-}
+  );
+};
 
-export default History
+export default History;
