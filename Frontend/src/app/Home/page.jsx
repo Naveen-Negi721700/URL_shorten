@@ -198,7 +198,7 @@ const Home = () => {
                 disabled={loading}
                 className="hover:text-stone-800 hover:bg-gray-200 bg-stone-800 px-5 py-2 h-12 text-lg sm:text-xl lg:text-2xl rounded-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "CHECKING..." : "SHORTEN!"}
+               SHORTEN!
               </button>
 
             </div>

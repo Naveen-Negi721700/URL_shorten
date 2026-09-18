@@ -3,7 +3,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import {Menu,X,Home,Info,History,Gem,LogIn,LogOut,} from "lucide-react";
+import { Menu, X, Home, Info, History, Gem, LogIn, LogOut, } from "lucide-react";
 import { useAuth } from "../Context/AuthContext";
 import { useSession, signOut } from "next-auth/react";
 
@@ -107,7 +107,23 @@ const Navbar = () => {
                             <div className="flex items-center gap-2 rounded-full bg-sky-500 px-5 py-2 text-base font-medium text-black shadow-lg shadow-sky-500/20 transition-all duration-300 hover:bg-sky-400">
 
                                 {loading ? (
-                                    <p>Loading...</p>
+                                    <>
+                                        <Link
+                                            href="/Login"
+                                            className="transition-transform duration-200 hover:scale-110"
+                                        >
+                                            LogIn
+                                        </Link>
+
+                                        <span>/</span>
+
+                                        <Link
+                                            href="/Signup"
+                                            className="transition-transform duration-200 hover:scale-110"
+                                        >
+                                            Signup
+                                        </Link>
+                                    </>
                                 ) : session ? (
                                     <>
                                         <div className="px-2">
@@ -116,7 +132,7 @@ const Navbar = () => {
 
                                         <button
                                             onClick={() => signOut()}
-                                            className="transition-transform duration-200 hover:scale-110"
+                                            className="transition-transform duration-200 hover:scale-110 "
                                         >
                                             Logout
                                         </button>
@@ -180,8 +196,8 @@ const Navbar = () => {
             {/* ================= MOBILE OVERLAY ================= */}
             <div
                 className={`fixed inset-0 top-20 z-40 bg-black/60 backdrop-blur-sm transition-opacity duration-500 lg:hidden ${isMenuOpen
-                        ? "pointer-events-auto opacity-100"
-                        : "pointer-events-none opacity-0"
+                    ? "pointer-events-auto opacity-100"
+                    : "pointer-events-none opacity-0"
                     }`}
                 onClick={closeMenu}
             />
@@ -190,8 +206,8 @@ const Navbar = () => {
             <div
                 ref={menuRef}
                 className={`fixed left-0 top-20 z-50 min-h-[calc(100vh-5rem)] w-80 max-w-[85vw] overflow-y-auto rounded-r-3xl border-r border-sky-500/30 bg-gradient-to-b from-stone-900 via-stone-900 to-stone-950 px-5 py-8 shadow-[8px_0_35px_rgba(0,0,0,0.5)] transition-transform duration-500 ease-out lg:hidden ${isMenuOpen
-                        ? "translate-x-0"
-                        : "-translate-x-full"
+                    ? "translate-x-0"
+                    : "-translate-x-full"
                     }`}
             >
 
@@ -278,9 +294,25 @@ const Navbar = () => {
                 <div className="flex w-full flex-col gap-3">
 
                     {loading ? (
-                        <p className="text-center text-sm text-gray-400">
-                            Loading...
-                        </p>
+                        <>
+                            <Link
+                                href="/Login"
+                                onClick={closeMenu}
+                                className="flex w-full items-center justify-center gap-3 rounded-xl bg-sky-500 px-5 py-3 text-sm font-semibold text-black transition-all duration-300 hover:scale-105 hover:bg-sky-400"
+                            >
+                                <LogIn size={18} />
+                                Login
+                            </Link>
+
+                            <Link
+                                href="/Signup"
+                                onClick={closeMenu}
+                                className="flex w-full items-center justify-center gap-3 rounded-xl border border-sky-500 px-5 py-3 text-sm font-semibold text-sky-400 transition-all duration-300 hover:scale-105 hover:bg-sky-500 hover:text-black"
+                            >
+                                <LogIn size={18} />
+                                Signup
+                            </Link>
+                        </>
                     ) : session ? (
                         <button
                             onClick={() => {

@@ -204,7 +204,13 @@ const loginUser = asyncHandler(async (req, res) => {
         path: "/"
     };
 
-    return res
+// const options = {
+//     httpOnly: true,
+//     secure: false,
+//     sameSite: "lax",
+//     path: "/"
+// };  
+  return res
         .status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
@@ -236,7 +242,12 @@ const logOutUser = asyncHandler(async (req, res) => {
         path: "/"
     };
 
-
+// const options = {
+//     httpOnly: true,
+//     secure: false,
+//     sameSite: "lax",
+//     path: "/"
+// };
     return res
         .status(200)
         .clearCookie("accessToken", options)
@@ -315,6 +326,13 @@ const refreshaccessToken = asyncHandler(
                 sameSite: "none",
                 path: "/"
             };
+
+//             const options = {
+//     httpOnly: true,
+//     secure: false,
+//     sameSite: "lax",
+//     path: "/"
+// };
 
 
             return res
@@ -426,6 +444,13 @@ const githubLogin = asyncHandler(async (req, res) => {
     sameSite: "none",
     path: "/"
 };
+
+// const options = {
+//     httpOnly: true,
+//     secure: false,
+//     sameSite: "lax",
+//     path: "/"
+// };
 
     return res
         .status(200)
