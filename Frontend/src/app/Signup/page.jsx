@@ -58,7 +58,7 @@ export default function Signup() {
                 username: "",
                 email: "",
                 password: ""
-            });
+            }); 
 
         } else {
             alert(result.message || "Failed to signup");
