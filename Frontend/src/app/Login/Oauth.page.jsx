@@ -150,11 +150,16 @@ export default function Oauth() {
 
                 </div>
 
+
+
                 {/* Footer */}
                 <p className="mt-8 text-xs leading-relaxed text-gray-500">
                     By continuing, you agree to our Terms of Service
                     and Privacy Policy.
                 </p>
+
+
+
 
             </div>
         </div>

@@ -41,7 +41,8 @@ export default function Login() {
                 }
             );
 
-            const result = await res.json();
+            const result = await  res.json();
+
 
             // console.log("API response:", result);
 
@@ -178,6 +179,8 @@ export default function Login() {
                         </p>
 
                     </div>
+
+
                 </div>
 
             </div>
