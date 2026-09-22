@@ -50,7 +50,7 @@ export default function Signup() {
                 draggable: true,
                 theme: "light",
             });
-
+               
                   
                 router.push("/Login");
 
