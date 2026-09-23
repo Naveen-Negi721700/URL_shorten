@@ -12,5 +12,4 @@ routes.route("/history").get(verifyJwt, getUserUrls);
 routes.route("/currentUser").get(verifyJwt, getCurrentUser);
 routes.route("/githubLogin").post(githubLogin);
 
-
 export default routes

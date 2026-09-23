@@ -8,9 +8,12 @@ const app = express();
 // console.log("CORS ORIGIN:", process.env.CORS_ORIGIN);
 app.use(cors({
     origin:process.env.CORS_ORIGIN,
-    credentials: true,
+    credentials: true,  
 }))
 app.set("trust proxy", 1);
+
+
+
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
